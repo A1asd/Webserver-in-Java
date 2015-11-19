@@ -138,9 +138,9 @@ final class HttpRequest implements Runnable
 		if(fileName.endsWith(".htm") || fileName.endsWith(".html")){
 			return "text/html";
 		}
-		// if() {
-		// 	return "";
-		// }
+		if(fileName.endsWith(".md")) {
+			return "text/md";
+		}
 		return "application/octet-stream";
 	}
 }
