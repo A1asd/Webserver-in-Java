@@ -4,17 +4,22 @@ import java.util.*;
 
 public final class WebServer
 {
-	public static void main(String argv[]) throws Exception
+	public static void main(String[] args) throws Exception
 	{
+		//get new mime.types path if argument -mime was given.
+		if(args.length>0 && args[0].equals("-mime"))
+		{
+			String pathToMime = args[1];
+			File mimefile = new File(pathToMime+"mime.types");
+			if (mimefile.exists()) {
+				System.out.println("Your mime.type file will now be searched at " + pathToMime);
+			} else {
+				System.out.println("Use -mime to specify a path where mime.types exists.");
+				System.exit(0);
+			}
+		}
 		//Set the port number.
 		int port = 6789;
-		//find out mime-type path
-		if(argv[0] == "-mime")
-		{
-			String pathToMime = argv[1];
-			//implement move option
-			System.out.println("Your mime-type file was moved to " + pathToMime);
-		}
 		//Establish the listen socket.
 		ServerSocket serverSocket = new ServerSocket(port);
 		//Process HTTP service requests in an infinite loop.
@@ -65,13 +70,19 @@ final class HttpRequest implements Runnable
 		//Get the request of the HTTP request message.
 		String requestLine = br.readLine();
 
+		String getClientIP = socket.getInetAddress().toString();
+
 		//Display the request line.
 		System.out.println();
 		System.out.println(requestLine);
 
 		//Get and display the header lines.
 		String headerLine = CRLF;
+		String userAgent = null;
 		while((headerLine = br.readLine()).length() != 0){
+			if (headerLine.contains("User-Agent")) {
+				userAgent = headerLine;
+			}
 			System.out.println(headerLine);
 		}
 
@@ -102,7 +113,7 @@ final class HttpRequest implements Runnable
 		} else {
 			statusLine = "Your File does not exist" + CRLF;
 			contentTypeLine = "" + CRLF;
-			entityBody = "<HTML>" + "<HEAD><TITLE>Not Found</TITLE></HEAD>" + "<BODY>Not Found</BODY></HTML>";
+			entityBody = "<HTML>" + "<HEAD><TITLE>Not Found</TITLE></HEAD>" + "<BODY>Not Found</BODY></HTML> " + userAgent + " " + getClientIP;
 		}
 
 		//Send the status line.
@@ -148,6 +159,7 @@ final class HttpRequest implements Runnable
 		if(fileName.endsWith(".md")) {
 			return "text/md";
 		}
+		//return  contentType(fileName)
 		return "application/octet-stream";
 	}
 }
