@@ -46,8 +46,15 @@ public final class WebServer
 		}
 	}
 
-	public static void fillHashMap(HashMap mimehash, File mimefile){
-
+	public static void fillHashMap(HashMap mimehash, File mimefile) throws Exception{
+		BufferedReader br = new BufferedReader(new FileReader(mimefile));
+		String line;
+		while((line = br.readLine()) != null) {
+			String[] mimeSplit = line.split("\\s");
+			if(!mimeSplit[0].contains("#")){
+				mimehash.put(mimeSplit[0], mimeSplit[1]);
+			}
+		}
 	}
 }
 
