@@ -7,24 +7,27 @@ public final class WebServer
 	public static void main(String[] args) throws Exception
 	{
 		//get new mime.types path if argument -mime was given.
+		File mimefile;
 		if(args.length>0 && args[0].equals("-mime"))
 		{
 			String pathToMime = args[1];
-			File mimefile = new File(pathToMime+"mime.types");
+			mimefile = new File(pathToMime+"mime.types");
 			if (mimefile.exists()) {
 				System.out.println("Your mime.type file will now be searched at " + pathToMime);
 			} else {
 				System.out.println("Use -mime to specify a path where mime.types exists.");
 				System.exit(0);
 			}
+		} else {
+			mimefile = new File("./mime.types");
 		}
 
 		HashMap mimehash = new HashMap(999);
 		if (args.length>0) {
-			fillHashMap(mimehash, mimefile)
-		} else (
-			fillHashMap(mimehash, new File("./mime.type)");
-		)
+			fillHashMap(mimehash, mimefile);
+		} else {
+			fillHashMap(mimehash, mimefile);
+		}
 
 		//Set the port number.
 		int port = 6789;
@@ -43,7 +46,7 @@ public final class WebServer
 		}
 	}
 
-	public fillHashMap(HashMap mimehash, File mimefile){
+	public static void fillHashMap(HashMap mimehash, File mimefile){
 
 	}
 }
@@ -134,7 +137,7 @@ final class HttpRequest implements Runnable
 		} else {
 			statusLine = "HTTP/1.0 404 NOT FOUND" + CRLF;
 			contentTypeLine = "" + CRLF;
-			entityBody = "<HTML>" + "<HEAD><TITLE>404 Not Found</TITLE></HEAD>" + "<BODY><img src=\"testfiles/404.jpg\"></img></BODY></HTML><br>" + userAgent + "<br>" + getClientIP;
+			entityBody = "<HTML>" + "<HEAD><TITLE>404 Not Found</TITLE></HEAD>" + "<BODY><img src=\"/testfiles/404.jpg\"></img></BODY></HTML><br>" + userAgent + "<br>" + getClientIP;
 		}
 
 		//Send the status line.
