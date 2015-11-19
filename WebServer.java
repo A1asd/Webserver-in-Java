@@ -93,6 +93,9 @@ final class HttpRequest implements Runnable
 
 		//Prepend a "." so that file request ist wihtin the current directory.
 		fileName = "." + fileName;
+		if (fileName.equals("./")) {
+			fileName = "./testfiles/index.html";
+		}
 
 		//Open the requested file.
 		FileInputStream fis = null;
@@ -108,12 +111,12 @@ final class HttpRequest implements Runnable
 		String contentTypeLine = null;
 		String entityBody = null;
 		if (fileExists){
-			statusLine = "Your File exists" + CRLF;
+			statusLine = "HTTP/1.0 200 OK" + CRLF;
 			contentTypeLine = "Content-type: " + contentType( fileName ) + CRLF;
 		} else {
-			statusLine = "Your File does not exist" + CRLF;
+			statusLine = "HTTP/1.0 404 NOT FOUND" + CRLF;
 			contentTypeLine = "" + CRLF;
-			entityBody = "<HTML>" + "<HEAD><TITLE>Not Found</TITLE></HEAD>" + "<BODY>Not Found</BODY></HTML> " + userAgent + " " + getClientIP;
+			entityBody = "<HTML>" + "<HEAD><TITLE>404 Not Found</TITLE></HEAD>" + "<BODY><img src=\"testfiles/404.jpg\"></img></BODY></HTML><br>" + userAgent + "<br>" + getClientIP;
 		}
 
 		//Send the status line.
