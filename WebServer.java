@@ -18,6 +18,14 @@ public final class WebServer
 				System.exit(0);
 			}
 		}
+
+		HashMap mimehash = new HashMap(999);
+		if (args.length>0) {
+			fillHashMap(mimehash, mimefile)
+		} else (
+			fillHashMap(mimehash, new File("./mime.type)");
+		)
+
 		//Set the port number.
 		int port = 6789;
 		//Establish the listen socket.
@@ -33,6 +41,10 @@ public final class WebServer
 			//Start the thread.
 			thread.start();
 		}
+	}
+
+	public fillHashMap(HashMap mimehash, File mimefile){
+
 	}
 }
 
@@ -110,6 +122,12 @@ final class HttpRequest implements Runnable
 		String statusLine = null;
 		String contentTypeLine = null;
 		String entityBody = null;
+
+		if (!requestLine.contains("GET") || !requestLine.contains("HEAD") || !requestLine.contains("POST")) {
+			statusLine = "HTTP/1.0 501 NOT IMPLEMENTED" + CRLF;
+			contentTypeLine = "" + CRLF;
+		}
+
 		if (fileExists){
 			statusLine = "HTTP/1.0 200 OK" + CRLF;
 			contentTypeLine = "Content-type: " + contentType( fileName ) + CRLF;
@@ -133,6 +151,8 @@ final class HttpRequest implements Runnable
 			sendBytes(fis, os);
 			fis.close();
 		} else {
+			statusLine = "HTTP/1.0 500 INTERNAL SERVER ERROR" + CRLF;
+			contentTypeLine = "" + CRLF;
 			os.writeBytes(entityBody);
 		}
 
