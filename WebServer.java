@@ -90,11 +90,11 @@ final class HttpRequest implements Runnable
 		String contentTypeLine = null;
 		String entityBody = null;
 		if (fileExists){
-			statusLine = ;
+			statusLine = "Your File exists" + CRLF;
 			contentTypeLine = "Content-type: " + contentType( fileName ) + CRLF;
 		} else {
-			statusLine = ;
-			contentTypeLine = ;
+			statusLine = "Your File does not exist" + CRLF;
+			contentTypeLine = "" + CRLF;
 			entityBody = "<HTML>" + "<HEAD><TITLE>Not Found</TITLE></HEAD>" + "<BODY>Not Found</BODY></HTML>";
 		}
 
@@ -138,9 +138,9 @@ final class HttpRequest implements Runnable
 		if(fileName.endsWith(".htm") || fileName.endsWith(".html")){
 			return "text/html";
 		}
-		if() {
-			return "";
-		}
+		// if() {
+		// 	return "";
+		// }
 		return "application/octet-stream";
 	}
 }

@@ -1,2 +1,1 @@
-README
-compile with "java WebServer.java"
+compile with "javac WebServer.java"
