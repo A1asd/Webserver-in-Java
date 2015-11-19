@@ -8,6 +8,13 @@ public final class WebServer
 	{
 		//Set the port number.
 		int port = 6789;
+		//find out mime-type path
+		if(argv[0] == "-mime")
+		{
+			String pathToMime = argv[1];
+			//implement move option
+			System.out.println("Your mime-type file was moved to " + pathToMime);
+		}
 		//Establish the listen socket.
 		ServerSocket serverSocket = new ServerSocket(port);
 		//Process HTTP service requests in an infinite loop.
