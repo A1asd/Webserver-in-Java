@@ -38,7 +38,7 @@ public final class WebServer
 			//Listen for a TCP connection request.
 			Socket client = serverSocket.accept();
 			//Construct an object to process the HTTP request message.
-			HttpRequest request = new HttpRequest(client);
+			HttpRequest request = new HttpRequest(client, mimehash);
 			//Create a new thread to process the request.
 			Thread thread = new Thread(request);
 			//Start the thread.
@@ -51,9 +51,12 @@ public final class WebServer
 		String line;
 		while((line = br.readLine()) != null) {
 			String[] mimeSplit = line.split("\\s");
-			if(!mimeSplit[0].contains("#")){
-				mimehash.put(mimeSplit[0], mimeSplit[1]);
-			}
+			//if(!mimeSplit[0].contains("#")){
+				for(int i = 4; i<mimeSplit.length; i++){
+					mimehash.put(mimeSplit[0], mimeSplit[i]);
+					System.out.println(mimeSplit[0] + " " + mimeSplit[i]);
+				}
+			//}
 		}
 	}
 }
@@ -64,7 +67,7 @@ final class HttpRequest implements Runnable
 	Socket socket;
 
 	//Constructor
-	public HttpRequest(Socket socket) throws Exception
+	public HttpRequest(Socket socket, HashMap mimehash) throws Exception
 	{
 		this.socket = socket;
 	}
@@ -141,6 +144,7 @@ final class HttpRequest implements Runnable
 		if (fileExists){
 			statusLine = "HTTP/1.0 200 OK" + CRLF;
 			contentTypeLine = "Content-type: " + contentType( fileName ) + CRLF;
+			System.out.println(contentTypeLine);
 		} else {
 			statusLine = "HTTP/1.0 404 NOT FOUND" + CRLF;
 			contentTypeLine = "" + CRLF;
