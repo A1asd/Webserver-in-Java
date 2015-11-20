@@ -51,12 +51,12 @@ public final class WebServer
 		String line;
 		while((line = br.readLine()) != null) {
 			String[] mimeSplit = line.split("\\s");
-			//if(!mimeSplit[0].contains("#")){
-				for(int i = 4; i<mimeSplit.length; i++){
+			if(!mimeSplit[0].contains("#")){
+				for(int i = 0; i<mimeSplit.length; i++){
 					mimehash.put(mimeSplit[0], mimeSplit[i]);
-					System.out.println(mimeSplit[0] + " " + mimeSplit[i]);
+					//System.out.println(mimeSplit[0] + " " + mimeSplit[i]);
 				}
-			//}
+			}
 		}
 	}
 }
