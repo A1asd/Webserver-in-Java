@@ -53,7 +53,7 @@ public final class WebServer
 			String[] mimeSplit = line.split("\\s");
 			if(!mimeSplit[0].contains("#")){
 				for(int i = 0; i<mimeSplit.length; i++){
-					mimehash.put(mimeSplit[0], mimeSplit[i]);
+					mimehash.put(mimeSplit[i], mimeSplit[0]);
 					//System.out.println(mimeSplit[0] + " " + mimeSplit[i]);
 				}
 			}
@@ -65,11 +65,13 @@ final class HttpRequest implements Runnable
 {
 	final static String CRLF = "\r\n";
 	Socket socket;
+	HashMap mimehash;
 
 	//Constructor
 	public HttpRequest(Socket socket, HashMap mimehash) throws Exception
 	{
 		this.socket = socket;
+		this.mimehash = mimehash;
 	}
 
 	//Implement the run() method of the Runnable Interface.
@@ -143,7 +145,7 @@ final class HttpRequest implements Runnable
 
 		if (fileExists){
 			statusLine = "HTTP/1.0 200 OK" + CRLF;
-			contentTypeLine = "Content-type: " + contentType( fileName ) + CRLF;
+			contentTypeLine = "Content-type: " + contentType(fileName, mimehash) + CRLF;
 			System.out.println(contentTypeLine);
 		} else {
 			statusLine = "HTTP/1.0 404 NOT FOUND" + CRLF;
@@ -188,15 +190,18 @@ final class HttpRequest implements Runnable
 		}
 	}
 
-	private static String contentType(String fileName)
+	private static String contentType(String fileName, HashMap mimehash)
 	{
-		if(fileName.endsWith(".htm") || fileName.endsWith(".html")){
-			return "text/html";
+		String extension = "";
+		int i = fileName.lastIndexOf(".");
+		if (i>0){
+			extension = fileName.substring(i+1);
 		}
-		if(fileName.endsWith(".md")) {
-			return "text/md";
+		System.out.println(extension.toString());
+		System.out.println(mimehash.get(extension).toString());
+		if(mimehash.containsKey(extension)){
+			return mimehash.get(extension).toString();
 		}
-		//return  contentType(fileName)
 		return "application/octet-stream";
 	}
 }
