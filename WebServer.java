@@ -192,15 +192,16 @@ final class HttpRequest implements Runnable
 
 	private static String contentType(String fileName, HashMap mimehash)
 	{
-		String extension = "";
-		int i = fileName.lastIndexOf(".");
-		if (i>0){
-			extension = fileName.substring(i+1);
-		}
-		System.out.println(extension.toString());
-		System.out.println(mimehash.get(extension).toString());
-		if(mimehash.containsKey(extension)){
-			return mimehash.get(extension).toString();
+		try{
+			String extension = "";
+			int i = fileName.lastIndexOf(".");
+			if (i>0){
+				extension = fileName.substring(i+1);
+			}
+			if(mimehash.containsKey(extension)){
+				return mimehash.get(extension).toString();
+			}
+		} catch (NullPointerException e){
 		}
 		return "application/octet-stream";
 	}
