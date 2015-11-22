@@ -7,27 +7,35 @@ public final class WebServer
 	public static void main(String[] args) throws Exception
 	{
 		//get new mime.types path if argument -mime was given.
-		File mimefile;
-		if(args.length>0 && args[0].equals("-mime"))
+		File mimefile = new File("./mime.types");
+		if(args.length==2 && args[0].equals("-mime"))
 		{
 			String pathToMime = args[1];
 			mimefile = new File(pathToMime+"mime.types");
 			if (mimefile.exists()) {
+				//SUCCSESS!! users mime.types exists. print out those good news
 				System.out.println("Your mime.type file will now be searched at " + pathToMime);
 			} else {
+				//if file does not exist print out instrucions on how to use mime
 				System.out.println("Use -mime to specify a path where mime.types exists.");
 				System.exit(0);
-			}
+			} 
+		}else if(args.length==1 && args[0].equals("-mime")){
+			//exit if only -mime as an argument was given and print out instruction how to use -mime
+			System.out.println("Type -mime /your/file/path if you want to specify a path for your mime.types");
+			System.exit(0);
+		} else if(args.length>0 && !args[0].equals("-mime")){
+			//exit if no valid argument (-mime) was given
+			System.out.println("No valid argument");
+			System.exit(0);
 		} else {
+			//if no path was specified use default file in directory
 			mimefile = new File("./mime.types");
 		}
 
+		//make a hashmap to store content types
 		HashMap mimehash = new HashMap(999);
-		if (args.length>0) {
-			fillHashMap(mimehash, mimefile);
-		} else {
-			fillHashMap(mimehash, mimefile);
-		}
+		fillHashMap(mimehash, mimefile);
 
 		//Set the port number.
 		int port = 6789;
@@ -47,14 +55,14 @@ public final class WebServer
 	}
 
 	public static void fillHashMap(HashMap mimehash, File mimefile) throws Exception{
+		//read out all content types and file extensions and store them to mimehash
 		BufferedReader br = new BufferedReader(new FileReader(mimefile));
 		String line;
 		while((line = br.readLine()) != null) {
 			String[] mimeSplit = line.split("\\s");
-			if(!mimeSplit[0].contains("#")){
+			if(!mimeSplit[0].contains("#")){ //no need for comments
 				for(int i = 0; i<mimeSplit.length; i++){
 					mimehash.put(mimeSplit[i], mimeSplit[0]);
-					//System.out.println(mimeSplit[0] + " " + mimeSplit[i]);
 				}
 			}
 		}
@@ -138,16 +146,17 @@ final class HttpRequest implements Runnable
 		String contentTypeLine = null;
 		String entityBody = null;
 
+		//HTTP1.0 Response 501 Not Implemented, if get, header nor post is in requestLine
 		if (!requestLine.contains("GET") || !requestLine.contains("HEAD") || !requestLine.contains("POST")) {
 			statusLine = "HTTP/1.0 501 NOT IMPLEMENTED" + CRLF;
 			contentTypeLine = "" + CRLF;
 		}
 
-		if (fileExists){
+		if (fileExists){ //everything ok! print out website/send bytes
 			statusLine = "HTTP/1.0 200 OK" + CRLF;
 			contentTypeLine = "Content-type: " + contentType(fileName, mimehash) + CRLF;
 			System.out.println(contentTypeLine);
-		} else {
+		} else { //nothing found here. print out HTTP1.0 Response 404
 			statusLine = "HTTP/1.0 404 NOT FOUND" + CRLF;
 			contentTypeLine = "" + CRLF;
 			entityBody = "<HTML>" + "<HEAD><TITLE>404 Not Found</TITLE></HEAD>" + "<BODY><img src=\"/testfiles/404.jpg\"></img></BODY></HTML><br>" + userAgent + "<br>" + getClientIP;
@@ -166,7 +175,7 @@ final class HttpRequest implements Runnable
 		if (fileExists){
 			sendBytes(fis, os);
 			fis.close();
-		} else {
+		} else { //HTTP1.0 Response 500 if connection gets lost or something else is nor working right
 			statusLine = "HTTP/1.0 500 INTERNAL SERVER ERROR" + CRLF;
 			contentTypeLine = "" + CRLF;
 			os.writeBytes(entityBody);
@@ -196,13 +205,17 @@ final class HttpRequest implements Runnable
 			String extension = "";
 			int i = fileName.lastIndexOf(".");
 			if (i>0){
+				//get extension out of filename
 				extension = fileName.substring(i+1);
 			}
+			//look for extension in mimehash
 			if(mimehash.containsKey(extension)){
+				//if extension is in mimehash print out its value which should be something like text/html or else...
 				return mimehash.get(extension).toString();
 			}
-		} catch (NullPointerException e){
+		} catch (NullPointerException e){//NullPointerException can be a possible exception here
 		}
+		//print "application/octet-stream" if extension is unknown
 		return "application/octet-stream";
 	}
 }
