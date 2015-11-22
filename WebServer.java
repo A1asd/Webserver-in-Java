@@ -60,7 +60,7 @@ public final class WebServer
 		String line;
 		while((line = br.readLine()) != null) {
 			String[] mimeSplit = line.split("\\s");
-			if(!mimeSplit[0].contains("#")){ //no need for comments
+			if(!mimeSplit[0].contains("#")){ //dont put comments in hashmap
 				for(int i = 0; i<mimeSplit.length; i++){
 					mimehash.put(mimeSplit[i], mimeSplit[0]);
 				}
@@ -214,6 +214,7 @@ final class HttpRequest implements Runnable
 				return mimehash.get(extension).toString();
 			}
 		} catch (NullPointerException e){//NullPointerException can be a possible exception here
+			return "application/octet-stream";
 		}
 		//print "application/octet-stream" if extension is unknown
 		return "application/octet-stream";
