@@ -59,10 +59,11 @@ public final class WebServer
 		BufferedReader br = new BufferedReader(new FileReader(mimefile));
 		String line;
 		while((line = br.readLine()) != null) {
-			String[] mimeSplit = line.split("\\s");
+			String[] mimeSplit = line.split("\\s+");
 			if(!mimeSplit[0].contains("#")){ //dont put comments in hashmap
 				for(int i = 0; i<mimeSplit.length; i++){
 					mimehash.put(mimeSplit[i], mimeSplit[0]);
+					System.out.println(mimeSplit[i] +" " + mimeSplit[0]);
 				}
 			}
 		}
@@ -158,8 +159,10 @@ final class HttpRequest implements Runnable
 			System.out.println(contentTypeLine);
 		} else { //nothing found here. print out HTTP1.0 Response 404
 			statusLine = "HTTP/1.0 404 NOT FOUND" + CRLF;
-			contentTypeLine = "" + CRLF;
 			entityBody = "<HTML>" + "<HEAD><TITLE>404 Not Found</TITLE></HEAD>" + "<BODY><img src=\"/testfiles/404.jpg\"></img></BODY></HTML><br>" + userAgent + "<br>" + getClientIP;
+			contentTypeLine = "Content-type: " + contentType(fileName, mimehash) + CRLF;
+			System.out.println(contentTypeLine);
+
 		}
 
 		//Send the status line.
